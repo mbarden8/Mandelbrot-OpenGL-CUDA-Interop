@@ -21,8 +21,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window, float* c_count);
 
 // some settings
-const int SCR_WIDTH = 1920;
-const int SCR_HEIGHT = 1080;
+const int SCR_WIDTH = 3840;
+const int SCR_HEIGHT = 2160;
 // for mandelbrot iterations
 const int MAX_ITERATIONS = 200;
 float centx = -0.5, centy = 0.0;
