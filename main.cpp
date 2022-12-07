@@ -18,13 +18,20 @@
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
+void processInput(GLFWwindow* window, float* c_count);
 
 // some settings
 const int SCR_WIDTH = 1920;
 const int SCR_HEIGHT = 1080;
 // for mandelbrot iterations
 const int MAX_ITERATIONS = 200;
+float centx = -0.5, centy = 0.0;
+float diam = 2.5;
+const float zoomSensitivity = 0.5f;
+const float moveSensitivity = 0.5f;
+
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
 
 int main(int argc, char** argv)
 {
@@ -113,8 +120,6 @@ int main(int argc, char** argv)
     resourceDesc.resType = cudaResourceTypeArray;
 
     /* Run our mandelbrot calculation kernel */
-    const float centx = -0.5, centy = 0.0;
-    const float diam = 2.5;
     float* c_count;
     cudaMalloc(&c_count, SCR_WIDTH * SCR_HEIGHT * sizeof(float));
 
@@ -129,8 +134,12 @@ int main(int argc, char** argv)
 
     while (!glfwWindowShouldClose(window))
     {
+        float currentFrame = static_cast<float>(glfwGetTime());
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
         // Process any user input
-        processInput(window);
+        processInput(window, c_count);
 
         // Map our mandelbrot to our created texture
         drawMandelbrot(SCR_WIDTH, SCR_HEIGHT, MAX_ITERATIONS, c_count, glfwGetTime(), &textureResource, &textureArray, &resourceDesc, surfaceObj);
@@ -161,10 +170,34 @@ int main(int argc, char** argv)
     return 0;
 }
 
-void processInput(GLFWwindow* window)
+void processInput(GLFWwindow* window, float* c_count)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        diam -= (zoomSensitivity * deltaTime);
+        calculateMandelbrot(SCR_WIDTH, SCR_HEIGHT, MAX_ITERATIONS, centx, centy, diam, c_count);
+    }
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+        diam += (zoomSensitivity * deltaTime);
+        calculateMandelbrot(SCR_WIDTH, SCR_HEIGHT, MAX_ITERATIONS, centx, centy, diam, c_count);
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        centx -= (zoomSensitivity * deltaTime);
+        calculateMandelbrot(SCR_WIDTH, SCR_HEIGHT, MAX_ITERATIONS, centx, centy, diam, c_count);
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        centx += (zoomSensitivity * deltaTime);
+        calculateMandelbrot(SCR_WIDTH, SCR_HEIGHT, MAX_ITERATIONS, centx, centy, diam, c_count);
+    }
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        centy += (zoomSensitivity * deltaTime);
+        calculateMandelbrot(SCR_WIDTH, SCR_HEIGHT, MAX_ITERATIONS, centx, centy, diam, c_count);
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        centy -= (zoomSensitivity * deltaTime);
+        calculateMandelbrot(SCR_WIDTH, SCR_HEIGHT, MAX_ITERATIONS, centx, centy, diam, c_count);
+    }
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)

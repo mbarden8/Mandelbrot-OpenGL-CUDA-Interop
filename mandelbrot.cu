@@ -107,7 +107,7 @@ __global__ void drawMandelbrotKernel(cudaSurfaceObject_t surface, int Nx, int Ny
 }
 
 // wrapper for calling kernel to launch mandelbrot calculation
-void calculateMandelbrot(int Nx, int Ny, int Nt, float centx, 
+void calculateMandelbrot(int Nx, int Ny, int Nt, float centx,
     float centy, float diam, float* c_count) {
 
     const float minx = centx - 0.5 * diam;
@@ -127,8 +127,8 @@ void calculateMandelbrot(int Nx, int Ny, int Nt, float centx,
 }
 
 // wrapper for kernel to draw mandelbrot results
-void drawMandelbrot(int Nx, int Ny, int Nt, float* c_count, float multiplier, 
-    cudaGraphicsResource_t* textureResource, cudaArray_t* textureArray, 
+void drawMandelbrot(int Nx, int Ny, int Nt, float* c_count, float multiplier,
+    cudaGraphicsResource_t* textureResource, cudaArray_t* textureArray,
     struct cudaResourceDesc* resourceDesc, cudaSurfaceObject_t surfaceObj) {
 
     int D = 16;
@@ -143,7 +143,7 @@ void drawMandelbrot(int Nx, int Ny, int Nt, float* c_count, float multiplier,
     resourceDesc->res.array.array = *textureArray;
     cudaCreateSurfaceObject(&surfaceObj, resourceDesc);
 
-    drawMandelbrotKernel << < gridDim, blockDim >> > (surfaceObj, Nx, Ny, Nt, c_count, multiplier);
+    drawMandelbrotKernel << < G, B >> > (surfaceObj, Nx, Ny, Nt, c_count, multiplier);
 
     cudaGraphicsUnmapResources(1, textureResource);
 
