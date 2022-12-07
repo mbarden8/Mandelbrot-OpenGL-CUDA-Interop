@@ -172,30 +172,35 @@ int main(int argc, char** argv)
 
 void processInput(GLFWwindow* window, float* c_count)
 {
+    /* 
+    * Note here we multiply our sensitivity by our diameter.
+    * We do this because we want to dampen our sensitivity as our data
+    * becomes smaller, more precise, and more sensitive.
+    */
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-        diam -= (zoomSensitivity * deltaTime);
+        diam -= ((zoomSensitivity * diam) * deltaTime);
         calculateMandelbrot(SCR_WIDTH, SCR_HEIGHT, MAX_ITERATIONS, centx, centy, diam, c_count);
     }
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-        diam += (zoomSensitivity * deltaTime);
+        diam += ((zoomSensitivity * diam) * deltaTime);
         calculateMandelbrot(SCR_WIDTH, SCR_HEIGHT, MAX_ITERATIONS, centx, centy, diam, c_count);
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        centx -= (zoomSensitivity * deltaTime);
+        centx -= ((moveSensitivity * diam) * deltaTime);
         calculateMandelbrot(SCR_WIDTH, SCR_HEIGHT, MAX_ITERATIONS, centx, centy, diam, c_count);
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        centx += (zoomSensitivity * deltaTime);
+        centx += ((moveSensitivity*diam) * deltaTime);
         calculateMandelbrot(SCR_WIDTH, SCR_HEIGHT, MAX_ITERATIONS, centx, centy, diam, c_count);
     }
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        centy += (zoomSensitivity * deltaTime);
+        centy += ((moveSensitivity*diam) * deltaTime);
         calculateMandelbrot(SCR_WIDTH, SCR_HEIGHT, MAX_ITERATIONS, centx, centy, diam, c_count);
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        centy -= (zoomSensitivity * deltaTime);
+        centy -= ((moveSensitivity*diam) * deltaTime);
         calculateMandelbrot(SCR_WIDTH, SCR_HEIGHT, MAX_ITERATIONS, centx, centy, diam, c_count);
     }
 }
