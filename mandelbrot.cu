@@ -133,8 +133,8 @@ void drawMandelbrot(int Nx, int Ny, int Nt, float* c_count, float multiplier,
 
     int D = 16;
 
-    dim3 blockDim(D, D);
-    dim3 gridDim((Nx + D - 1) / blockDim.x, (Ny + D - 1) / blockDim.y);
+    dim3 B(D, D);
+    dim3 G((Nx + D - 1) / D, (Ny + D - 1) / D);
 
     cudaGraphicsMapResources(1, textureResource);
 
